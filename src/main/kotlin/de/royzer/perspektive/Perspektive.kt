@@ -6,13 +6,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.option.Perspective
-import net.minecraft.client.render.Camera
 import net.minecraft.client.util.InputUtil
-import net.minecraft.entity.Entity
-import net.minecraft.text.Text
-import net.minecraft.world.BlockView
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.LogManager
 import org.lwjgl.glfw.GLFW
 
 object Perspektive : ModInitializer {
@@ -29,14 +23,14 @@ object Perspektive : ModInitializer {
             KeyBinding("Freelook", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Y, "Perspektive")
         )
         ClientTickEvents.END_CLIENT_TICK.register {
-            if (useKeybind.isPressed) {
+            if (useKeybind.wasPressed()) {
                 if (!freeLookEnabled)
                     perspectiveBefore = MinecraftClient.getInstance().options.perspective
-                freeLookEnabled = true
-                MinecraftClient.getInstance().options.perspective = Perspective.THIRD_PERSON_BACK
-            } else if (freeLookEnabled) {
-                freeLookEnabled = false
-                MinecraftClient.getInstance().options.perspective = perspectiveBefore
+                freeLookEnabled = !freeLookEnabled
+                if (freeLookEnabled)
+                    MinecraftClient.getInstance().options.perspective = Perspective.THIRD_PERSON_BACK
+                else
+                    MinecraftClient.getInstance().options.perspective = perspectiveBefore
             }
         }
     }
